@@ -4,9 +4,9 @@
   "description": "",
   "main": "app.js",
   "scripts": {
-  "start": "node app.js",
-  "watch": "nodemon --ext *"
-},
+    "start": "node ./bin/www",
+    "watch": "nodemon --ext *"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",

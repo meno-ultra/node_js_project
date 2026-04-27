@@ -1,6 +1,6 @@
 const express = require("express");
 const app = express();
-const port = process.env.PORT || 3001;
+const port = 3001;
 const mongoose = require("mongoose");
 const Admin = require("./models/adminSchema");
 const User = require("./models/customerSchema");
@@ -338,13 +338,12 @@ mongoose
   .then(async () => {
     await ensureDefaultAdmin();
     app.listen(port, () => {
-  console.log(`Server running on port ${port}`);
-});
+      console.log(`http://localhost:${port}/`);
+    });
   })
   .catch((err) => {
     console.log(err);
   });
-  
 
 app.use(async (req, res, next) => {
   const publicPaths = ["/login", "/mazen-logo.png"];
