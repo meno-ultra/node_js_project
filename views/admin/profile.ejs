@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="auto">
+  <head>
+    <script src="../js/color-modes.js"></script>
+    <link
+      rel="stylesheet"
+      href="../bootstrap-icons-1.10.5/font/bootstrap-icons.min.css"
+    />
+    <link rel="shortcut icon" href="/mazen-logo.png" type="image/png" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Admin Profile</title>
+    <link href="../css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="../css/dark-light.css" />
+    <link href="../css/sidebars.css" rel="stylesheet" />
+    <link rel="stylesheet" href="../css/myStyle.css" />
+  </head>
+  <body>
+    <%- include('../Components/dark-light.ejs') %>
+
+    <main class="d-flex flex-nowrap">
+      <%- include('../Components/sidebar.ejs', { currentPage: "profile" }) %>
+
+      <section class="w-100 app-content">
+        <%- include('../Components/navbar.ejs') %>
+        <% const canManageAdmins = ["admin", "super-admin"].includes(currentAdmin.role); %>
+        <% const isViewer = currentAdmin.role === "viewer"; %>
+
+        <% if (successMessage) { %>
+        <div class="alert alert-success mt-4"><%= successMessage %></div>
+        <% } %>
+        <% if (errorMessage) { %>
+        <div class="alert alert-danger mt-4"><%= errorMessage %></div>
+        <% } %>
+
+        <div class="row mt-3 g-4">
+          <div class="col-lg-6">
+            <div class="app-form h-100">
+              <h4 class="mb-3">My Admin Account</h4>
+              <p class="text-secondary mb-4">Update your username/password.</p>
+              <form action="/profile/update" method="post" class="d-grid gap-3">
+                <% if (!isViewer) { %>
+                  <div>
+                    <label class="form-label" for="username">Username</label>
+                    <input
+                      id="username"
+                      class="form-control"
+                      name="username"
+                      type="text"
+                      value="<%= currentAdmin.username %>"
+                      required
+                    />
+                  </div>
+                <% } else { %>
+                  <div>
+                    <label class="form-label">Username</label>
+                    <input class="form-control" value="<%= currentAdmin.username %>" disabled />
+                  </div>
+                <% } %>
+                <div>
+                  <label class="form-label" for="currentPassword">Current Password</label>
+                  <input
+                    id="currentPassword"
+                    class="form-control"
+                    name="currentPassword"
+                    type="password"
+                    required
+                  />
+                </div>
+                <div>
+                  <label class="form-label" for="newPassword">New Password</label>
+                  <input
+                    id="newPassword"
+                    class="form-control"
+                    name="newPassword"
+                    type="password"
+                    required
+                  />
+                </div>
+                <div>
+                  <span class="badge text-bg-primary">Role: <%= currentAdmin.role %></span>
+                </div>
+                <button class="btn btn-primary" type="submit">Save Changes</button>
+              </form>
+            </div>
+          </div>
+
+          <% if (canManageAdmins) { %>
+            <div class="col-lg-6">
+              <div class="app-form h-100">
+                <h4 class="mb-3">Add Another Admin</h4>
+                <p class="text-secondary mb-4">Create extra login accounts with roles.</p>
+                <form action="/profile/admins/add" method="post" class="d-grid gap-3">
+                  <div>
+                    <label class="form-label" for="newUsername">Username</label>
+                    <input id="newUsername" class="form-control" name="newUsername" type="text" required />
+                  </div>
+                  <div>
+                    <label class="form-label" for="adminPassword">Password</label>
+                    <input id="adminPassword" class="form-control" name="newPassword" type="password" required />
+                  </div>
+                  <div>
+                    <label class="form-label" for="role">Role</label>
+                    <select id="role" name="role" class="form-select">
+                      <option value="admin">admin</option>
+                      <option value="manager">manager</option>
+                      <option value="viewer">viewer</option>
+                    </select>
+                  </div>
+                  <button class="btn btn-success" type="submit">Add Admin</button>
+                </form>
+              </div>
+            </div>
+          <% } %>
+        </div>
+
+        <% if (!isViewer) { %>
+        <div class="mt-4 app-form">
+          <h5 class="mb-3">Admins List</h5>
+          <div class="table-responsive">
+            <table class="table table-striped table-bordered app-table mb-0">
+              <thead>
+                <tr>
+                  <th>Username</th>
+                  <th>Role</th>
+                  <th>Created</th>
+                  <% if (canManageAdmins) { %>
+                    <th>Actions</th>
+                  <% } %>
+                </tr>
+              </thead>
+              <tbody>
+                <% admins.forEach((admin) => { %>
+                <tr>
+                  <td><%= admin.username %></td>
+                  <td>
+                    <% if (canManageAdmins) { %>
+                      <form action="/profile/admins/<%= admin._id %>/role" method="post" class="d-flex gap-2 align-items-center">
+                        <select name="role" class="form-select form-select-sm">
+                          <option value="super-admin" <%= admin.role === "super-admin" ? "selected" : "" %>>super-admin</option>
+                          <option value="admin" <%= admin.role === "admin" ? "selected" : "" %>>admin</option>
+                          <option value="manager" <%= admin.role === "manager" ? "selected" : "" %>>manager</option>
+                          <option value="viewer" <%= admin.role === "viewer" ? "selected" : "" %>>viewer</option>
+                        </select>
+                        <button type="submit" class="btn btn-sm btn-outline-primary">Save</button>
+                      </form>
+                    <% } else { %>
+                      <span class="badge text-bg-secondary"><%= admin.role %></span>
+                    <% } %>
+                  </td>
+                  <td><%= admin.createdAt.toDateString() %></td>
+                  <% if (canManageAdmins) { %>
+                    <td>
+                      <% if (String(admin._id) !== String(currentAdmin._id)) { %>
+                        <form action="/profile/admins/<%= admin._id %>/delete" method="post" style="display: inline;">
+                          <button type="submit" class="btn btn-sm btn-danger">Remove</button>
+                        </form>
+                      <% } else { %>
+                        <span class="badge text-bg-primary">Current</span>
+                      <% } %>
+                    </td>
+                  <% } %>
+                </tr>
+                <% }) %>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <% } %>
+      </section>
+    </main>
+
+    <script src="../js/bootstrap.bundle.min.js"></script>
+    <script src="../js/sidebars.js"></script>
+    <script src="../js/main.js"></script>
+  </body>
+</html>

@@ -1,0 +1,23 @@
+{
+  "name": "node-level1",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "start": "node ./bin/www",
+    "watch": "nodemon --ext *"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "connect-livereload": "^0.6.1",
+    "ejs": "^3.1.10",
+    "express": "^4.18.2",
+    "livereload": "^0.9.3",
+    "method-override": "^3.0.0",
+    "moment": "^2.30.1",
+    "mongoose": "^7.4.0",
+    "nodemon": "^3.0.1"
+  }
+}

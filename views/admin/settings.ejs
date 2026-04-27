@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="auto">
+  <head>
+    <script src="../js/color-modes.js"></script>
+    <link
+      rel="stylesheet"
+      href="../bootstrap-icons-1.10.5/font/bootstrap-icons.min.css"
+    />
+    <link rel="shortcut icon" href="/mazen-logo.png" type="image/png" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Settings</title>
+    <link href="../css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="../css/dark-light.css" />
+    <link href="../css/sidebars.css" rel="stylesheet" />
+    <link rel="stylesheet" href="../css/myStyle.css" />
+  </head>
+  <body>
+    <%- include('../Components/dark-light.ejs') %>
+
+    <main class="d-flex flex-nowrap">
+      <%- include('../Components/sidebar.ejs', { currentPage: "settings" }) %>
+
+      <section class="w-100 app-content">
+        <%- include('../Components/navbar.ejs') %>
+
+        <% if (successMessage) { %>
+        <div class="alert alert-success mt-4"><%= successMessage %></div>
+        <% } %>
+        <% if (errorMessage) { %>
+        <div class="alert alert-danger mt-4"><%= errorMessage %></div>
+        <% } %>
+
+        <% const isViewer = currentAdmin && currentAdmin.role === "viewer"; %>
+        <div class="row g-4 mt-1">
+          <div class="col-lg-6">
+            <div class="app-form h-100">
+              <h4 class="mb-3">Export Customers</h4>
+              <p class="text-secondary">Download all customer data as CSV file.</p>
+              <a href="/settings/export/customers.csv" class="btn btn-primary">
+                <i class="bi bi-download me-1"></i> Export CSV
+              </a>
+            </div>
+          </div>
+
+          <% if (!isViewer) { %>
+          <div class="col-lg-6">
+            <div class="app-form h-100">
+              <h4 class="mb-3">Import Customers</h4>
+              <p class="text-secondary">
+                Upload CSV with columns: firstName,lastName,email,phoneNumber,age,country,gender
+              </p>
+              <form action="/settings/import/customers" method="post" class="d-grid gap-3">
+                <input id="customersCsvInput" type="file" class="form-control" name="customersCsv" accept=".csv" required />
+                <textarea id="csvContentField" name="csvContent" class="d-none"></textarea>
+                <button type="submit" class="btn btn-success">
+                  <i class="bi bi-upload me-1"></i> Import CSV
+                </button>
+              </form>
+            </div>
+          </div>
+          <% } %>
+        </div>
+
+        <% if (!isViewer) { %>
+        <div class="mt-4 app-form">
+          <h4 class="mb-3">Audit Log</h4>
+          <p class="text-secondary">Track who changed what and when.</p>
+          <div class="table-responsive audit-log-scroll">
+            <table class="table table-striped table-bordered app-table mb-0">
+              <thead>
+                <tr>
+                  <th>When</th>
+                  <th>Actor</th>
+                  <th>Role</th>
+                  <th>Action</th>
+                  <th>Target</th>
+                  <th>Details</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% logs.forEach((log) => { %>
+                <tr>
+                  <td><%= new Date(log.createdAt).toLocaleString() %></td>
+                  <td><%= log.actorUsername %></td>
+                  <td><span class="badge text-bg-secondary"><%= log.actorRole %></span></td>
+                  <td><%= log.action %></td>
+                  <td><%= log.targetType %> <%= log.targetId ? `(${log.targetId})` : '' %></td>
+                  <td><%= log.details || "-" %></td>
+                </tr>
+                <% }) %>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <% } %>
+      </section>
+    </main>
+
+    <script src="../js/bootstrap.bundle.min.js"></script>
+    <script src="../js/sidebars.js"></script>
+    <script src="../js/main.js"></script>
+    <script>
+      const csvForm = document.querySelector('form[action="/settings/import/customers"]');
+      const csvInput = document.getElementById("customersCsvInput");
+      const csvContentField = document.getElementById("csvContentField");
+
+      if (csvForm && csvInput && csvContentField) {
+        csvForm.addEventListener("submit", async (event) => {
+          if (csvContentField.value.trim()) return;
+
+          event.preventDefault();
+          const file = csvInput.files?.[0];
+          if (!file) return;
+
+          const content = await file.text();
+          csvContentField.value = content;
+          csvForm.submit();
+        });
+      }
+    </script>
+  </body>
+</html>

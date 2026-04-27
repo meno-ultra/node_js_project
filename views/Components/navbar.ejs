@@ -1,0 +1,45 @@
+<%
+  const hideDashboardTitle = currentPath === "/profile" || currentPath === "/user/add.html" || currentPath === "/settings";
+  const showSearch = currentPath === "/";
+  const showNavbar = !hideDashboardTitle || showSearch;
+%>
+<% if (showNavbar) { %>
+  <nav class="navbar bg-body-tertiary app-navbar">
+    <div
+      class="container-fluid d-flex flex-column flex-md-row align-items-stretch align-items-md-center gap-2"
+    >
+      <% if (!hideDashboardTitle) { %>
+        <a class="navbar-brand fw-semibold fs-4 mb-0 text-center text-md-start">Dashboard</a>
+      <% } %>
+
+      <% if (showSearch) { %>
+      <form action="/search" method="post" class="d-flex app-search-form w-100" role="search">
+        <input
+          id="liveSearchInput"
+          class="form-control me-2 app-search-input flex-grow-1"
+          name="searchText"
+          type="search"
+          placeholder="Start typing to search..."
+          aria-label="Search"
+          autocomplete="off"
+        />
+        <div class="app-search-tools">
+          <select id="sortField" class="form-select form-select-sm">
+            <option value="updatedAt" selected>Last updated</option>
+            <option value="createdAt">Created</option>
+            <option value="fireName">First name</option>
+            <option value="lastName">Last name</option>
+            <option value="gender">Gender</option>
+            <option value="country">Country</option>
+            <option value="age">Age</option>
+          </select>
+          <select id="sortOrder" class="form-select form-select-sm">
+            <option value="desc" selected>Desc</option>
+            <option value="asc">Asc</option>
+          </select>
+        </div>
+      </form>
+      <% } %>
+    </div>
+  </nav>
+<% } %>

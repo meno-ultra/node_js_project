@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="auto">
+  <head>
+    <script src="../js/color-modes.js"></script>
+    <link rel="shortcut icon" href="/mazen-logo.png" type="image/png" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Sign In</title>
+    <link href="../css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="../css/dark-light.css" />
+    <link rel="stylesheet" href="../css/myStyle.css" />
+  </head>
+  <body>
+    <%- include('../Components/dark-light.ejs') %>
+
+    <main class="auth-page">
+      <section class="auth-card">
+        <img src="/mazen-logo.png" alt="Logo" class="auth-logo" />
+        <h1 class="auth-title">Dashboard Login</h1>
+        <p class="auth-subtitle">Sign in to continue to your dashboard.</p>
+
+        <% if (errorMessage) { %>
+          <div class="alert alert-danger py-2" role="alert"><%= errorMessage %></div>
+        <% } %>
+
+        <form action="/login" method="post" class="auth-form">
+          <div>
+            <label class="form-label" for="username">Username</label>
+            <input id="username" name="username" class="form-control" type="text" required />
+          </div>
+          <div>
+            <label class="form-label" for="password">Password</label>
+            <input id="password" name="password" class="form-control" type="password" required />
+          </div>
+          <button type="submit" class="btn btn-primary w-100">Sign In</button>
+        </form>
+      </section>
+    </main>
+
+    <script src="../js/bootstrap.bundle.min.js"></script>
+  </body>
+</html>
