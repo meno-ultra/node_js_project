@@ -338,12 +338,13 @@ mongoose
   .then(async () => {
     await ensureDefaultAdmin();
     app.listen(port, () => {
-      console.log(`http://localhost:${port}/`);
-    });
+  console.log(`Server running on port ${port}`);
+});
   })
   .catch((err) => {
     console.log(err);
   });
+  
 
 app.use(async (req, res, next) => {
   const publicPaths = ["/login", "/mazen-logo.png"];
